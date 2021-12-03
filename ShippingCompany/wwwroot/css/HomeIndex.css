@@ -1,0 +1,29 @@
+﻿.content{
+    display:flex;
+    flex-direction:column;
+}
+.item{
+    margin: 1px;
+    border: 2px solid black;
+}
+.fild .title{
+    font-weight:700;
+    display: inline;
+}
+.fild{
+    border-bottom: 1px solid #cccccc
+}
+.info{
+    display:flex;
+    flex-direction:row;
+}
+.filds {
+    flex-grow: 4;
+}
+.view{
+    flex-grow:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}

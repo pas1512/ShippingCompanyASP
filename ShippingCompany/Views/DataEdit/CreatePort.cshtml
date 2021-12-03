@@ -1,0 +1,26 @@
+﻿@model ShippingCompany.Models.PortModel
+    <div>
+        <form method="post" action="">
+            <div>
+                <div>
+                    <label asp-for="Name">Назва</label>
+                    <input type="text" asp-for="Name" />
+                </div>
+                <div>
+                    <label asp-for="Country">Країна</label>
+                    <input type="text" asp-for="Country" />
+                </div>
+                <div>
+                    <label asp-for="Latitude">Широта</label>
+                    <input type="number" asp-for="Latitude" />
+                </div>
+                <div>
+                    <label asp-for="Longitude">Довгота</label>
+                    <input type="number" asp-for="Longitude" />
+                </div>
+                <div>
+                    <input type="submit" value="Створити" />
+                </div>
+            </div>
+        </form>
+    </div>

@@ -1,0 +1,21 @@
+﻿@model ShippingCompany.Models.PortInfoModel
+<div>
+    <form method="post" asp-action="CreatePortInfo">
+        <div>
+            <input type="hidden" value="@ViewBag.VoyageId" name="Id" />
+            <div>
+                <label asp-for="Port">Порт</label>
+                <select asp-for="PortId" asp-items="ViewBag.Ports"></select>
+            </div>
+            <div>
+                <label asp-for="TimeOfArrival">Дата і час прибуття</label>
+                <input type="datetime-local" asp-for="TimeOfArrival" />
+            </div>
+            <div>
+                <label asp-for="ParkingTime">Час швартування</label>
+                <input asp-for="ParkingTime" type="number" step="30" min="30"/>
+            </div>
+            <div><input type="submit" value="Додати" /></div>
+        </div>
+    </form>
+</div>

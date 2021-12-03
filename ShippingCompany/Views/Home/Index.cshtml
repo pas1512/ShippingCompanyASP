@@ -1,0 +1,28 @@
+﻿@{
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Home Page";
+}
+<link href="~/css/HomeIndex.css" rel="stylesheet" />
+@model IEnumerable<ShippingCompany.Models.VoyageModel>
+<div class="content">
+    @foreach (var item in Model)
+    {
+        <div class="item">
+            <h5>@item.Name</h5>
+            <div class="info">
+                <div class="filds">
+                    <div class="fild"><span class="title">Ship: </span>"@item.ServingShip.Name"</div>
+                    <div class="fild"><span class="title">Date: </span>@item.DateStart</div>
+                    <div class="fild"><span class="title">Course: </span>@item.PortsInfo</div>
+                </div>
+                <div class="view">
+                    <a href="#">Редагувати</a>
+                    <a href="#">Видалити</a>
+                </div>
+            </div>            
+        </div>
+    }
+    <div class="admin_panel">
+        <a asp-controller="DataEdit" asp-action="CreateVoyage">Додати рейс</a>
+    </div>
+</div>

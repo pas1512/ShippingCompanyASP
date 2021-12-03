@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<link href="~/css/HomeIndex.css" rel="stylesheet" />
+@model IEnumerable<ShippingCompany.Models.ShipModel>
+<div class="content">
+    @foreach (var item in Model)
+    {
+        <div class="item">
+            <h5>@item.ShipID</h5>
+            <div class="info">
+                <div class="filds">
+                    <div class="fild"><span class="title">Ship: </span>"@item.Name"</div>
+                    <div class="fild"><span class="title">Cabins сount: </span>@item.Cabins.Count</div>
+                    <div class="fild"><span class="title">Total sits сount: </span>@item.TotalSits</div>
+                </div>
+                <div class="view">
+                    <a href="#">Редагувати</a>
+                    <a href="#">Видалити</a>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="admin_panel">
+        <a href="#">Додати судно</a>
+    </div>
+</div>

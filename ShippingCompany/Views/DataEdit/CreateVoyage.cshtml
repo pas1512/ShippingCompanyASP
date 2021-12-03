@@ -1,0 +1,30 @@
+﻿@model ShippingCompany.Models.VoyageModel
+<div>
+    <form method="post" asp-action="CreateVoyage">
+        <div>
+            <div>
+                <label asp-for="ServingShipId">Корабль</label>
+                <select asp-for="ServingShipId" asp-items="ViewBag.Ships"></select>
+            </div>
+            <div>
+                <label asp-for="DateStart">Початок</label>
+                <input type="datetime-local" asp-for="DateStart"/>
+            </div>
+            <div>
+                <label asp-for="Ports">Порти</label>
+                <input type="hidden" asp-for="PortsJson"/>
+                <div class="ports">
+                    @if (Model != null)
+                    {
+                        foreach (var it in Model.Ports)
+                        {
+                            <div>@it.Port.Name</div>
+                        }
+                    }
+                    <button asp-action="GetCreatePortInfo">Додати порт</button>
+                </div>
+            </div>
+            <div><input type="submit" value="Стоврити" /></div>
+        </div>
+    </form>
+</div>
