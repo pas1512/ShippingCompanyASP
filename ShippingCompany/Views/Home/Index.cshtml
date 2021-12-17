@@ -4,25 +4,48 @@
 }
 <link href="~/css/HomeIndex.css" rel="stylesheet" />
 @model IEnumerable<ShippingCompany.Models.VoyageModel>
-<div class="content">
-    @foreach (var item in Model)
-    {
-        <div class="item">
-            <h5>@item.Name</h5>
-            <div class="info">
-                <div class="filds">
-                    <div class="fild"><span class="title">Ship: </span>"@item.ServingShip.Name"</div>
-                    <div class="fild"><span class="title">Date: </span>@item.DateStart</div>
-                    <div class="fild"><span class="title">Course: </span>@item.PortsInfo</div>
-                </div>
-                <div class="view">
-                    <a href="#">Редагувати</a>
-                    <a href="#">Видалити</a>
-                </div>
-            </div>            
-        </div>
-    }
-    <div class="admin_panel">
-        <a asp-controller="DataEdit" asp-action="CreateVoyage">Додати рейс</a>
+    <div id="modDialog" class="modal fade">
+        <div id="dialogContent" class="modal-dialog"></div>
     </div>
-</div>
+    <div class="content">
+        @foreach (var item in Model)
+        {
+            <div class="item">
+                <h5>@item.Name</h5>
+                <div class="info">
+                    <div class="filds">
+                        <div class="fild"><span class="title">Ship: </span>"@item.ServingShip.Name"</div>
+                        <div class="fild"><span class="title">Date: </span>@item.DateStart</div>
+                        <div class="fild"><span class="title">Course: </span>@item.PortsInfo</div>
+                    </div>
+                    <div class="view">
+                        <form action="../../Voyages/Edit/@item.Id" method="get">
+                            <button class="btn-outline-primary">Редагувати</button>
+                        </form>
+                        <button class="Remove btn-outline-danger" data-id="@item.Id">Видалити</button>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="admin_panel">
+            <a asp-controller="Voyages" asp-action="CreateVoyage">Додати рейс</a>
+        </div>
+    </div>
+    @section scripts{
+        <script type="text/javascript">
+            $(function () {
+                $.ajaxSetup({ cache: false });
+                $(".Remove").click(function (e) {
+                    e.preventDefault();
+                    let id = e.delegateTarget.attributes["data-id"].value;
+                    $.get('../../Voyages/Remove/' + id, function (data) {
+                        $('#dialogContent').html(data);
+                        $('#modDialog').modal('show');
+                        $('#close').click(function () {
+                            $('#modDialog').modal('hide');
+                        })
+                    });
+                });
+            })
+        </script>
+    }

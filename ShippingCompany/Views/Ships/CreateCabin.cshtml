@@ -1,0 +1,32 @@
+﻿@model ShippingCompany.Models.CabinModel
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Нова каюта</h4>
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+    </div>
+    <div class="modal-body">
+        <form onsubmit="return false">
+            <div>
+                <div>
+                    <label asp-for="Number">Номер</label>
+                    <input type="text" asp-for="Number" id="Number" />
+                </div>
+                <div>
+                    <label asp-for="Type">Тип</label>
+                    <input type="text" asp-for="Type" id="Type" />
+                </div>
+                <div>
+                    <label asp-for="Price">Ціна</label>
+                    <input type="number" asp-for="Price" step="0.01" id="Price" />
+                </div>
+                <div>
+                    <label asp-for="SeatsCount">Число місць</label>
+                    <input type="number" asp-for="SeatsCount" id="Count" min="1"/>
+                </div>
+                <div>
+                    <input type="submit" value="Створити" id="add-cabin"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

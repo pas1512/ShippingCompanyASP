@@ -7,7 +7,24 @@ namespace ShippingCompany.Models
         public int Id { get; set; }
         public PortModel Port { get; set; }
         public int PortId { get; set; }
-        public DateTime TimeOfArrival { get; set; }
+
+        private DateTime timearr;
+        public DateTime TimeOfArrival
+        {
+            get { return timearr; }
+            set 
+            {
+                DateTime dateTime = value.AddSeconds(-value.Second);
+                dateTime = value.AddMilliseconds(-dateTime.Millisecond);
+                timearr = dateTime; 
+            }
+        }
+
         public int ParkingTime { get; set; }
+
+        public PortInfoModel()
+        {
+            Id = -1;
+        }
     }
 }

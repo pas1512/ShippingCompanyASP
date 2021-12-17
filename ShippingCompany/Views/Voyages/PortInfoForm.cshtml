@@ -1,0 +1,27 @@
+﻿@model ShippingCompany.Models.PortInfoModel
+<div class="modal-content" data-action="@ViewBag.Action">
+    <div class="modal-header">
+        <h4>Дата і тривалість швартування</h4>
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+    </div>
+    <div class="modal-body">
+        <form onsubmit="return false">
+            <div>
+                <input class="Id" type="hidden" asp-for="Id"/>
+                <div>
+                    <label asp-for="Port">Порт</label>
+                    <select class="Port" style="width: 200px"></select>
+                </div>
+                <div>
+                    <label asp-for="TimeOfArrival">Дата і час прибуття</label>
+                    <input class="Date" type="datetime-local" asp-for="TimeOfArrival" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}"/>
+                </div>
+                <div>
+                    <label asp-for="ParkingTime">Час швартування</label>
+                    <input class="Time" type="number" asp-for="ParkingTime" min="30" step="5"/>
+                </div>
+                <div><input class="button-confirm" type="submit"/></div>
+            </div>
+        </form>
+    </div>
+</div>

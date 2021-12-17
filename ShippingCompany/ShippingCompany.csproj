@@ -9,7 +9,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ShippingCompanyModels\ShippingCompanyModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\PortInfo\" />
   </ItemGroup>
 
 </Project>

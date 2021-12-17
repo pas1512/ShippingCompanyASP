@@ -1,0 +1,19 @@
+﻿@model ShippingCompany.Models.VoyageModel
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Ви впевнені що хочете видалити цей рейс?</h4>
+    </div>
+    <div class="modal-body">
+        <form method="post" asp-controller="Voyages" asp-action="Remove">
+            <div>
+                <div>Name: @Model.Name</div>
+                <div>Course: @Model.PortsInfo</div>
+                <input type="hidden" asp-for="Id" id="Id" />
+            </div>
+            <div class="d-inline-flex">
+                <input type="button" id="close" value="Ні. Скасувати"/>
+                <input type="submit" value="Так. Видалити"/>
+            </div>
+        </form>
+    </div>
+</div>

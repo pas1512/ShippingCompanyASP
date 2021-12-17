@@ -1,0 +1,19 @@
+﻿@model ShippingCompany.Models.ShipModel
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4>Ви впевнені що хочете видалити це судно?</h4>
+        </div>
+        <div class="modal-body">
+            <form method="post">
+                <div>
+                    <div>Name: @Model.Name</div>
+                    <div>Id: @Model.ShipID</div>
+                    <input type="hidden" asp-for="Id" id="Id" />
+                </div>
+                <div class="d-inline-flex">
+                    <input type="button" id="close" value="Ні. Скасувати" />
+                    <input type="submit" asp-action="Remove" value="Так. Видалити" />
+                </div>
+            </form>
+        </div>
+    </div>

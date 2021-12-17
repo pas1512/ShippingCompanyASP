@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShippingCompanyModels
 {
-    class Cabin
+    public class Cabin
     {
         public int Id { get; set; }
 

@@ -1,0 +1,24 @@
+﻿@model ShippingCompany.Models.PortModel
+    <div>
+        <form method="post" asp-action="Edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div>
+                <Label asp-for="Name">Назва</Label>
+                <input asp-for="Name" type="text" />
+            </div>
+            <div>
+                <Label asp-for="Country">Країна</Label>
+                <input asp-for="Country" type="text" />
+            </div>
+            <div>
+                <Label asp-for="Latitude">Широта</Label>
+                <input asp-for="Name" type="number" step="any" />
+            </div>
+            <div>
+                <Label asp-for="Longitude">Довгота</Label>
+                <input asp-for="Country" type="number" step="any" />
+            </div>
+            <input type="submit" value="Зберегти" />
+        </form>
+    </div>
