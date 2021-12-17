@@ -1,0 +1,51 @@
+﻿@model ShippingCompany.Models.ShipModel
+<div id="modDialog" class="modal fade">
+    <div id="dialogContent" class="modal-dialog"></div>
+</div>
+<div>
+    <form method="post" asp-action="CreateShip">
+        <div>
+            <div>
+                <label asp-for="Name">Назва</label>
+                <input asp-for="Name" type="text" />
+            </div>
+            <div>
+                <label asp-for="ShipID">ID</label>
+                <input asp-for="ShipID" type="text" />
+            </div>
+            <div>
+                <label asp-for="Cabins">Каюти</label>
+                <div class="сabins-block">
+                    <div id="cabins-view" class="Cabins"></div>
+                    <button type="button" class="add-cabin">Додати каюту</button>
+                </div>
+            </div>
+            <div><input type="submit" value="Стоврити" class="submit" /></div>
+        </div>
+    </form>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        let cabins_count = 0;
+        $(function () {
+            $.ajaxSetup({ cache: false });
+            $(".add-cabin").click(function (e) {
+                e.preventDefault();
+                $.get(`CreateCabin/${cabins_count + 1}`, function (data) {
+                    $('#dialogContent').html(data);
+                    $('#modDialog').modal('show');
+                    $('#add-cabin').click(function () {
+                        $('#cabins-view').append(
+                            `<div class="Cabin">№${$('#Number').val()} | Count: ${$('#Count').val() }<div/>`+
+                            `<input name="Cabins[${cabins_count}].Number" type="hidden" value="${ $('#Number').val() }"/>`+
+                            `<input name="Cabins[${cabins_count}].Type" type="hidden" value="${ $('#Type').val() }"/>`+
+                            `<input name="Cabins[${cabins_count}].Price" type="hidden" value="${$('#Price').val()}"/>`+
+                            `<input name="Cabins[${cabins_count}].SeatsCount" type="hidden" value="${$('#Count').val()}"/>`);
+                        ++cabins_count;
+                        $('#modDialog').modal('hide');
+                    });
+                });
+            });
+        })
+    </script>
+}

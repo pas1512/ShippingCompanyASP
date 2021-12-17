@@ -1,0 +1,117 @@
+﻿@model ShippingCompany.Models.ShipModel
+<div id="modDialog" class="modal fade">
+    <div id="dialogContent" class="modal-dialog"></div>
+</div>
+<div>
+    <form method="post" asp-action="Edit">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div>
+            <Label asp-for="Name">Назва</Label>
+            <input asp-for="Name" type="text" />
+        </div>
+        <div>
+            <Label asp-for="ShipID">ID</Label>
+            <input asp-for="ShipID" type="text" />
+        </div>
+        <div id="cabins-view" class="flex-column">
+            @for (int i = 0; i < Model.Cabins.Count; i++)
+            {
+                <div id="Cabin-@i" class="info">
+                    <div>
+                        <input asp-for="Cabins[i].Id" id="Id-@i" type="hidden" />
+                        <input asp-for="Cabins[i].Number" id="Number-@i" type="hidden" />
+                        <input asp-for="Cabins[i].Type" id="Type-@i" type="hidden" />
+                        <input asp-for="Cabins[i].Price" id="Price-@i" type="hidden" />
+                        <input asp-for="Cabins[i].SeatsCount" id="Count-@i" type="hidden" />
+                        <div id="ViewNumber-@i">Номер: @Model.Cabins[i].Number</div>
+                        <div id="ViewCount-@i">Місць: @Model.Cabins[i].SeatsCount</div>
+                        <div id="ViewPrice-@i">Ціна: @Model.Cabins[i].Price</div>
+                    </div>
+                    <div class="view">
+                        <button type="button" class="edit btn-outline-primary" data-id="@i">Редагувати</button>
+                        <button type="button" class="delete btn-outline-danger" data-id="@i">Видалити</button>
+                    </div>
+                </div>
+            }
+        </div>
+        <div>
+            <button type="button" class="add btn-outline-success">Додати</button>
+        </div>
+        <input type="submit" value="Зберегти" />
+    </form>
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            let cbns_count = @Model.Cabins.Count;
+
+            let start_modal = function (data) {
+                $('#dialogContent').html(data);
+                $('#modDialog').modal('show');
+            }
+            let get_modal_result = function () {
+                return {
+                    'Number' : $(`#Number`).val(),
+                    'Type'   : $(`#Type`).val(),
+                    'Price'  : $(`#Price`).val(),
+                    'Count'  : $(`#Count`).val()
+                };
+            }
+
+            let del_cabin = function (e) {
+                var id = e.delegateTarget.attributes["data-id"].value;
+                $(`#Cabin-${id}`).remove();
+            };
+            let add_cabin = function () {
+                $.get(`../CreateCabin/${cbns_count}`, function (data) {
+                    start_modal(data);
+                    $('#add-cabin').click(function () {
+                        let data = get_modal_result();
+                        let numder = `<input name="Cabins[${cbns_count}].Number" id="Number-${cbns_count}" type="hidden" value="${data["Number"]}"/>`;
+                        let type = `<input name="Cabins[${cbns_count}].Type" id="Type-${cbns_count}" type="hidden" value="${data["Type"]}"/>`;
+                        let price = `<input name="Cabins[${cbns_count}].Price" id="Price-${cbns_count}" type="hidden" value="${data["Price"]}"/>`;
+                        let count = `<input name="Cabins[${cbns_count}].SeatsCount" id="Count-${cbns_count}" type="hidden" value="${data["Count"]}"/>`;
+                        let label = `<div id="ViewNumber-${cbns_count}">Номер: ${data["Number"]}</div>` +
+                            `<div id="ViewCount-${cbns_count}">Місць: ${data["Count"]}</div>` +
+                            `<div id="ViewPrice-${cbns_count}">Ціна: ${data["Price"]}</div>`;
+                        let data_section = "<div>" + numder + type + price + count + label +"</div>";
+                        let butons_section = `<div><button type="button" class="edit btn-outline-primary" data-id="${cbns_count}">Редагувати</button>` +
+                            `<button type="button" class="delete btn-outline-danger" data-id="${cbns_count}">Видалити</button></div>`;
+                        $('#cabins-view').append(`<div id="Cabin-${cbns_count}">` + data_section + butons_section + "</div>");
+                        $('.delete').click(del_cabin);
+                        $('.edit').click(edit_cabin);
+                        ++cbns_count;
+                        $('#modDialog').modal('hide');
+                    });
+                });
+            };
+            let edit_cabin = function (e) {
+                var id = e.delegateTarget.attributes["data-id"].value;
+                $.get(`../CreateCabin/${id}`, function (data) {
+                    start_modal(data);
+                    $('#Number').val($(`#Number-${id}`).val());
+                    $('#Type').val($(`#Type-${id}`).val());
+                    $('#Price').val($(`#Price-${id}`).val());
+                    $('#Count').val($(`#Count-${id}`).val());
+                    $('#add-cabin').val("Зберегти");
+                    $('#add-cabin').click(function () {
+                        let data = get_modal_result();
+                        $(`#Number-${id}`).val(data['Number']);
+                        $(`#Type-${id}`).val(data['Type']);
+                        $(`#Price-${id}`).val(data['Price']);
+                        $(`#Count-${id}`).val(data['Count']);
+                        $(`#ViewNumber-${id}`).text(`Номер: ${data['Number']}`);
+                        $(`#ViewPrice-${id}`).text(`Ціна: ${data['Price']}`);
+                        $(`#ViewCount-${id}`).text(`Місць : ${data['Count']}`);
+                        $('#modDialog').modal('hide');
+                    });
+                });
+            };
+            $('.delete').click(del_cabin);
+            $('.edit').click(edit_cabin);
+            $('.add').click(add_cabin);
+        });
+    </script>
+}

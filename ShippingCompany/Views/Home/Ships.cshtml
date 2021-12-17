@@ -3,25 +3,48 @@
 }
 <link href="~/css/HomeIndex.css" rel="stylesheet" />
 @model IEnumerable<ShippingCompany.Models.ShipModel>
-<div class="content">
-    @foreach (var item in Model)
-    {
-        <div class="item">
-            <h5>@item.ShipID</h5>
-            <div class="info">
-                <div class="filds">
-                    <div class="fild"><span class="title">Ship: </span>"@item.Name"</div>
-                    <div class="fild"><span class="title">Cabins сount: </span>@item.Cabins.Count</div>
-                    <div class="fild"><span class="title">Total sits сount: </span>@item.TotalSits</div>
-                </div>
-                <div class="view">
-                    <a href="#">Редагувати</a>
-                    <a href="#">Видалити</a>
+    <div id="modDialog" class="modal fade">
+        <div id="dialogContent" class="modal-dialog"></div>
+    </div>
+    <div class="content">
+        @foreach (var item in Model)
+        {
+            <div class="item">
+                <h5>@item.ShipID</h5>
+                <div class="info">
+                    <div class="filds">
+                        <div class="fild"><span class="title">Ship: </span>"@item.Name"</div>
+                        <div class="fild"><span class="title">Cabins сount: </span>@item.Cabins.Count</div>
+                        <div class="fild"><span class="title">Total sits сount: </span>@item.TotalSits</div>
+                    </div>
+                    <div class="view">
+                        <form action="../../Ships/Edit/@item.Id" method="get">
+                            <button class="btn-outline-primary">Редагувати</button>
+                        </form>
+                        <button class="Remove btn-outline-danger" data-id="@item.Id">Видалити</button>
+                    </div>
                 </div>
             </div>
+        }
+        <div class="admin_panel">
+            <a asp-controller="Ships" asp-action="CreateShip">Додати судно</a>
         </div>
-    }
-    <div class="admin_panel">
-        <a href="#">Додати судно</a>
     </div>
-</div>
+    @section scripts{
+        <script type="text/javascript">
+            $(function () {
+                $.ajaxSetup({ cache: false });
+                $(".Remove").click(function (e) {
+                    e.preventDefault();
+                    let id = e.delegateTarget.attributes["data-id"].value;
+                    $.get('../Ships/Remove/' + id, function (data) {
+                        $('#dialogContent').html(data);
+                        $('#modDialog').modal('show');
+                        $('#close').click(function () {
+                            $('#modDialog').modal('hide');
+                        })
+                    });
+                });
+            })
+        </script>
+    }

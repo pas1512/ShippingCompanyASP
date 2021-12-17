@@ -20,7 +20,7 @@ namespace ShippingCompany.Controllers
 
         public IActionResult Index()
         {
-            return View(DummyDataBase.data.Voyages);
+            return View(DataBaseModel.Data.Voyages);
         }
 
         public IActionResult Privacy()
@@ -30,12 +30,12 @@ namespace ShippingCompany.Controllers
 
         public IActionResult Ships()
         {
-            return View(DummyDataBase.data.Ships);
+            return View(DataBaseModel.Data.Ships);
         }
 
         public IActionResult Ports()
         {
-            return View(DummyDataBase.data.Ports);
+            return View(DataBaseModel.Data.Ports);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

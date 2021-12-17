@@ -9,7 +9,19 @@ namespace ShippingCompany.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public DateTime DateStart { get; set; }
+
+        private DateTime datestart;
+        public DateTime DateStart
+        {
+            get { return datestart; }
+            set 
+            { 
+                DateTime dateTime = value.AddSeconds(-value.Second);
+                dateTime = value.AddMilliseconds(-dateTime.Millisecond);
+                datestart = dateTime; 
+            }
+        }
+
         public ShipModel ServingShip { get; set; }
         public int ServingShipId { get; set; }
 
@@ -49,15 +61,9 @@ namespace ShippingCompany.Models
                 return ports == ""? "":ports.Remove(ports.Length - 1); 
             }
         }
-        public string PortsJson
-        {
-            get
-            {
+        public string PortsJson {
+            get{
                 return JsonSerializer.Serialize(Ports);
-            }
-            set
-            {
-                Ports = value == null? new List<PortInfoModel>(): (List<PortInfoModel>)JsonSerializer.Deserialize(value, typeof(List<PortInfoModel>));
             }
         }
     }

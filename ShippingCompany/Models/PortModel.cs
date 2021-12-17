@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShippingCompanyModels;
+using System;
 namespace ShippingCompany.Models
 {
     [Serializable]

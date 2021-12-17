@@ -1,0 +1,304 @@
+﻿@model VoyageModel
+<div id="modDialog" class="modal fade">
+    <div id="dialogContent" class="modal-dialog"></div>
+</div>
+<div id="VoyageForm">
+    <form method="post" data-action="@ViewBag.Action">
+        <div>
+            <label asp-for="ServingShip">Корабль</label>
+            <select asp-for="ServingShipId" asp-items="ViewBag.Ships"></select>
+        </div>
+        <div>
+            <label asp-for="DateStart">Початок</label>
+            <input type="datetime-local" asp-for="DateStart"/>
+        </div>
+        <div>
+            <label asp-for="Ports">Порти</label>
+            <input id="ports-data" type="hidden" value="@Model.PortsJson" />
+            <div id="ports-view">
+            </div>
+            <button id="add-port" class="btn-outline-secondary" type="button">Додати порт</button>
+        </div>
+        <input id="button-confirm" class="btn-outline-success" type="submit" value="" />
+    </form>
+</div>
+<div id="templates">
+    <template id="buttons-template">
+        <button class="edit-port btn-outline-info" type="button">Редагувати</button>
+        <button class="remove-port btn-outline-danger" type="button">Видалити</button>
+    </template>
+</div>
+
+@section scripts{
+    <script>
+        const CREATE_PORT_ACTION_PATH = "GetPortInfoForm";
+        const EDIT_PORT_ACTION_PATH = "GetEditPortItemTemlate";
+        const REMOVE_PORT_ACTION_PATH = "GetRemovePortItemTemlate";
+        const EDIT_ACTION = "Edit";
+        let main_form_action;
+        let port_item_template;
+        let ports_view;
+        let ports_count;
+        let ports_data;
+
+        function parceToPortFormObject(html_text) {
+            html_template = $(html_text);
+            return {
+                HtmlData: html_template,
+                Id: html_template.find('.Id'),
+                Port: html_template.find('.Port'),
+                Date: html_template.find('.Date'),
+                Time: html_template.find('.Time'),
+                Confirm: html_template.find('.button-confirm')
+            };
+        }
+        function parceToPortItemObject(html_text) {
+            html_template = $(html_text);
+            return {
+                HtmlData: html_template,
+                Id: html_template.find('.Id'),
+                Port: html_template.find('.Port'),
+                PortId: html_template.find('.PortId'),
+                TimeOfArrival: html_template.find('.TimeOfArrival'),
+                ParkingTime: html_template.find('.ParkingTime'),
+                TextPort: html_template.find('.TextPort'),
+                TextTimeOfArrival: html_template.find('.TextTimeOfArrival'),
+                TextParkingTime: html_template.find('.TextParkingTime'),
+                buttonSection: html_template.find('.button-section')
+            };
+        }
+        function clonePortItemObject(port_template) {
+            let html_template = port_template.HtmlData.clone();
+            return parceToPortItemObject(html_template);
+        }
+    </script>
+    <script>
+        function setPortFormData(item, form) {
+            form.Id.val(item.Id.val());
+            form.Port.select2({ data: [{ id: item.PortId.val(), text: item.TextPort.text() }] });
+            form.Port.select2("data", { id: item.PortId.val(), text: item.TextPort.text() });
+            setSelect2(form.Port);
+            form.Date.val(item.TimeOfArrival.val());
+            form.Time.val(item.ParkingTime.val());
+        }
+        function writeDataInPortItem(item, model) {
+            item.Id.val(model.Id);
+            item.PortId.val(model.PortId);
+            item.TimeOfArrival.val(model.TimeOfArrival);
+            item.ParkingTime.val(model.ParkingTime);
+
+            item.TextPort.text(model.Port.Name);
+            item.TextTimeOfArrival.text(model.TimeOfArrival);
+            item.TextParkingTime.text(model.ParkingTime);
+        }
+        function getPortItemByModel(port_info_model) {
+            let new_port_item = clonePortItemObject(port_item_template);
+            writeDataInPortItem(new_port_item, port_info_model);
+            return new_port_item;
+        }
+        function setPortItemData(item, form) {
+            item.Id.val(form.Id.val());
+
+            item.PortId.val(form.Port.select2("data")[0].id);
+            item.TimeOfArrival.val(form.Date.val());
+            item.ParkingTime.val(form.Time.val());
+
+            item.TextPort.text(form.Port.select2("data")[0].name);
+            item.TextTimeOfArrival.text(form.Date.val());
+            item.TextParkingTime.text(form.Time.val());
+        }
+        function getNewPortItem(form) {
+            let new_port_item = clonePortItemObject(port_item_template);
+            setPortItemData(new_port_item, form);
+            return new_port_item;
+        }
+        function appendNewPortInfo(item) {
+            item.HtmlData.attr("id", `Port-${ports_count}`);
+            item.buttonSection.find('.edit-port').attr("data-id", `Port-${ports_count}`);
+            item.buttonSection.find('.edit-port').click(editPort);
+            item.buttonSection.find('.remove-port').attr("data-id", `Port-${ports_count}`);
+            item.buttonSection.find('.remove-port').click(removePort);
+            item.Id.attr("name", `Ports[${ports_count}].Id`);
+            item.PortId.attr("name", `Ports[${ports_count}].PortId`);
+            item.TimeOfArrival.attr("name", `Ports[${ports_count}].TimeOfArrival`);
+            item.ParkingTime.attr("name", `Ports[${ports_count}].ParkingTime`);
+            ports_view.append(item.HtmlData);
+            ++ports_count;
+        }
+        function editPortConfirm(id, form) {
+            let selected_element = $(`#${id}`);
+            let port_item_object = parceToPortItemObject(selected_element);
+            setPortItemData(port_item_object, form);
+        }
+        function removePortConfirm(id) {
+            let selected_element = $(`#${id}`);
+            let num = parseInt(id[id.length - 1]);
+            for (let i = num + 1; i < ports_count; i++) {
+                $(`#Port-${i}`).find(".edit-port").attr("data-id", `Port-${i - 1}`);
+                $(`#Port-${i}`).find("remove-port").attr("data-id", `Port-${i - 1}`);
+                $(`#Port-${i}`).find(".Id").attr("name", `Ports[${i - 1}].Id`);
+                $(`#Port-${i}`).find(".PortId").attr("name", `Ports[${i - 1}].PortId`);
+                $(`#Port-${i}`).find(".TimeOfArrival").attr("name", `Ports[${i - 1}].TimeOfArrival`);
+                $(`#Port-${i}`).find(".ParkingTime").attr("name", `Ports[${i - 1}].ParkingTime`);
+                $(`#Port-${i}`).attr("id", `Port-${i - 1}`);
+            }
+            selected_element.remove();
+            --ports_count;
+        }
+    </script>
+    <script>
+        function setSelect2(el) {
+            el.select2({
+                with: "100%",
+                ajax: {
+                    url: main_form_action == EDIT_ACTION ? "../GetFindedPorts" :"GetFindedPorts",
+                    delay: 300,
+                    dataType: 'json',
+                    data: function (params) {
+                        return { q: params.term };
+                    },
+                    processResults: function (e) {
+                        var data = $.map(e, function (obj) {
+                            obj.id = obj.id;
+                            obj.text = obj.name;
+                            return obj;
+                        });
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+        }
+        function openModal(action, confirmFunction, executeCondition, metdata = null) {
+            let action_string;
+            let actionDependentFunction;
+            let actionCorrection = main_form_action == EDIT_ACTION ? "../": "";
+            switch (action) {
+                case "create":
+                    action_string = actionCorrection + CREATE_PORT_ACTION_PATH;
+                    actionDependentFunction = function (data) {
+                        let ret = parceToPortFormObject(data);
+                        setSelect2(ret.Port);
+                        ret.Confirm.val("Створити");
+                        ret.Confirm.click(function () {
+                            if (executeCondition(ret)) {
+                                confirmFunction(ret);
+                            }
+                        });
+                        return ret;
+                    };
+                    break;
+                case "edit":
+                    action_string = actionCorrection + EDIT_PORT_ACTION_PATH;
+                    actionDependentFunction = function (data) {
+                        let ret = parceToPortFormObject(data);
+                        let item = parceToPortItemObject(metdata);
+                        setPortFormData(item, ret);
+                        ret.Confirm.val("Змінити");
+                        ret.Confirm.click(function () {
+                            if (executeCondition(ret)) {
+                                confirmFunction(ret);
+                            }
+                        });
+                        return ret;
+                    };
+                    break;
+                case "remove":
+                    action_string = actionCorrection + REMOVE_PORT_ACTION_PATH;
+                    actionDependentFunction = function (data) {
+                        let ret = parceToPortFormObject(data);
+                        ret.HtmlData.find(".button-close").click(function () {
+                            $('#modDialog').modal('hide');
+                        });
+                        ret.Confirm.click(function () {
+                            if (executeCondition(ret)) {
+                                confirmFunction(ret);
+                            }
+                        });
+                        return ret;
+                    };
+                    break;
+                default:
+                    action_string = "";
+                    actionDependentFunction = function (data) {
+                        console.error(action);
+                        console.error(data);
+                        return { HtmlData: "Вибачте виникла помилка" };
+                    };
+            }
+            $.get(action_string, function (data) {
+                let modal_form = actionDependentFunction(data);
+                $('#dialogContent').html(modal_form.HtmlData);
+                $('#modDialog').modal('show');
+            });
+        }
+    </script>
+    <script>
+        function loadConfigs(onreadyFunction) {
+            main_form_action = $('form').attr("data-action");
+            let get_port_temlate_action = main_form_action == EDIT_ACTION ? '../GetPortItemTemlate': 'GetPortItemTemlate';
+            $.get(get_port_temlate_action, function (data) {
+                port_item_template = parceToPortItemObject(data);
+                port_item_template.buttonSection.append($('#buttons-template').html());
+
+                ports_count = 0;
+                ports_view = $("#ports-view");
+                ports_data = $.parseJSON($("#ports-data").val());
+                $('#button-confirm').val(main_form_action == EDIT_ACTION ? "Зберегти зміни" : "Створити");
+                onreadyFunction();
+            });
+        }
+        function createPort() {
+            openModal("create",
+                function (modal_form) {
+                    let new_item = getNewPortItem(modal_form);
+                    $('#modDialog').modal('hide');
+                    appendNewPortInfo(new_item);
+                },
+                function (modal_form) {
+                    return modal_form.Port.select2('data').length != 0;
+                }
+            );
+        }
+        function removePort(e) {
+            openModal("remove",
+                function () {
+                    let id = e.delegateTarget.attributes["data-id"].value;
+                    removePortConfirm(id);
+                    $('#modDialog').modal('hide');
+                },
+                function () {
+                    return true;
+                }
+            );
+        }
+        function editPort(e) {
+            openModal("edit",
+                function (modal_form) {
+                    let id = e.delegateTarget.attributes["data-id"].value;
+                    editPortConfirm(id, modal_form);
+                    $('#modDialog').modal('hide');
+                },
+                function () {
+                    return true;
+                },
+                $(`#${e.delegateTarget.attributes["data-id"].value}`)
+            );
+        }
+        function main() {
+            if (main_form_action == EDIT_ACTION) {
+                for (var i = 0; i < ports_data.length; i++) {
+                    let new_port_item = getPortItemByModel(ports_data[i]);
+                    appendNewPortInfo(new_port_item);
+                }
+            }
+            $("#add-port").click(createPort);
+        }
+    </script>
+    <script>
+        $(function () {
+            loadConfigs(main);
+        });
+    </script>
+}
